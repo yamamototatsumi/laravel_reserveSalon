@@ -8,6 +8,7 @@ use App\Models\Event;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Support\Carbon;
 use App\Services\EventService;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class EventController extends Controller
 {
@@ -18,8 +19,10 @@ class EventController extends Controller
      */
     public function index()
     {
-      $events=Event::orderby('start_date','asc')
-      ->paginate(10);
+      $today = Carbon::today();
+      $events=Event::wheredate('start_date', '>=', $today)
+      ->orderby('start_date','asc')
+      ->paginate(20);
         return view('manager.events.index',['events' => $events]);
     }
 
@@ -33,12 +36,6 @@ class EventController extends Controller
       return view('manager.events.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreEventRequest  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(StoreEventRequest $request)
     {
       $check = EventService::checkEventDuplication($request->event_date,$request->start_time,$request->end_time);
@@ -63,12 +60,6 @@ class EventController extends Controller
       return to_route('events.index'); //名前付きルート
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Event  $event
-     * @return \Illuminate\Http\Response
-     */
     public function show(Event $event)
     {
         $event = Event::find($event->id);
@@ -78,27 +69,51 @@ class EventController extends Controller
         return view('manager.events.show', compact('event','eventDate','startTime','endTime'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Event  $event
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Event $event)
     {
-        //
+      $event = Event::find($event->id);
+      $eventDate = $event->editEventDate;
+      $startTime = $event->startTime;
+      $endTime = $event->endTime;
+    
+      return view('manager.events.edit', compact('event','eventDate','startTime','endTime'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateEventRequest  $request
-     * @param  \App\Models\Event  $event
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateEventRequest $request, Event $event)
+
+    public function update(UpdateEventRequest $request, Event $event, EventService $instance)
     {
-        //
+      $count = EventService::countEventDuplication($request->event_date,$request->start_time,$request->end_time);
+      if($count > 1){
+        $event = Event::find($event->id);
+        $eventDate = $event->editEventDate;
+        $startTime = $event->startTime;
+        $endTime = $event->endTime;
+      
+        session()->flash('status', 'この時間帯は既に予約が存在します');
+        return view('manager.events.edit', compact('event','eventDate','startTime','endTime'));
+      }
+
+      $startDate = EventService::joinDateAndTime($request->event_date,$request->start_time);
+      $endDate =  EventService::joinDateAndTime($request->event_date,$request->end_time);
+
+      $event = Event::find($event->id)
+      ->fill(['name' => $request->event_name, 
+      'information' => $request->information, 
+      'start_date' => $startDate,
+      'end_date' => $endDate,
+      'max_people' => $request->max_people, 
+      'is_visible' => $request->is_visible,
+      ])->save();
+      session()->flash('status', '更新されました');
+      return to_route('events.index'); //名前付きルート
+    }
+
+    public function past(){
+      $today = Carbon::today();
+      $events = Event::wheredate('start_date', '<', $today)
+      ->orderBy('start_date', 'desc')
+      ->paginate(20);
+      return  view('manager.events.past', compact('events'));
     }
 
     /**
