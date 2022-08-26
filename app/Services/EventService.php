@@ -29,5 +29,10 @@ class EventService{
     return Carbon::createFromFormat('Y-m-d H:i',$join);
   }
 
+  public static function getWeekEvents($startDate, $endDate){
+    $today = Carbon::today();
+    return Event::whereBetween('start_date', [$startDate, $endDate]) ->orderBy('start_date', 'asc')
+    ->get();
+  }
 
 }
