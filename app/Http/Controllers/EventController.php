@@ -8,6 +8,7 @@ use App\Models\Event;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Support\Carbon;
 use App\Services\EventService;
+use App\Models\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class EventController extends Controller
@@ -19,6 +20,7 @@ class EventController extends Controller
      */
     public function index()
     {
+      // $events = Event::with('users')->find(1)->users()->get()->toArray();
       $today = Carbon::today();
       $events=Event::wheredate('start_date', '>=', $today)
       ->orderby('start_date','asc')
@@ -26,15 +28,13 @@ class EventController extends Controller
         return view('manager.events.index',['events' => $events]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
+
     public function create()
     {
       return view('manager.events.create');
     }
+
 
     public function store(StoreEventRequest $request)
     {
@@ -56,18 +56,33 @@ class EventController extends Controller
       'max_people' => $request->max_people, 
       'is_visible' => $request->is_visible,
       ]);
+
       session()->flash('status', '登録okです');
       return to_route('events.index'); //名前付きルート
     }
 
+
+
     public function show(Event $event)
     {
-        $event = Event::find($event->id);
+        $users = Event::with('users')->find($event->id)->users()->get();
+        
+        $reservations = []; // 連想配列を作成
+        foreach($users as $user) {
+        $reservedInfo = [
+        'name' => $user->name,
+        'number_of_people' => $user->pivot->number_of_people, 
+        'canceled_date' => $user->pivot->canceled_date
+        ];
+        array_push($reservations, $reservedInfo); // 連想配列に追加
+        }
+
         $eventDate = $event->eventDate;
         $startTime = $event->startTime;
         $endTime = $event->endTime;
-        return view('manager.events.show', compact('event','eventDate','startTime','endTime'));
+        return view('manager.events.show', compact('event', 'users','eventDate','startTime','endTime', 'reservations'));
     }
+
 
     public function edit(Event $event)
     {
@@ -75,7 +90,6 @@ class EventController extends Controller
       $eventDate = $event->editEventDate;
       $startTime = $event->startTime;
       $endTime = $event->endTime;
-    
       return view('manager.events.edit', compact('event','eventDate','startTime','endTime'));
     }
 
@@ -88,7 +102,6 @@ class EventController extends Controller
         $eventDate = $event->editEventDate;
         $startTime = $event->startTime;
         $endTime = $event->endTime;
-      
         session()->flash('status', 'この時間帯は既に予約が存在します');
         return view('manager.events.edit', compact('event','eventDate','startTime','endTime'));
       }

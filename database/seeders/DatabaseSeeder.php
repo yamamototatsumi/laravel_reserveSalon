@@ -15,10 +15,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+      Event::factory(100)->create();
+
+
       $this->call([
         UserSeeder::class,
+        Event_userSeeder::class,
+        ReservationSeeder::class
         ]);
 
-        Event::factory(100)->create();
+        
     }
 }
