@@ -7,7 +7,7 @@ flatpickr("#event_date",
   minDate: "today", 
   maxDate: new Date().fp_incr(30) });
 
-flatpickr("#calender", 
+flatpickr("#calendar", 
 { locale : Japanese, 
   // minDate: "today", 
   maxDate: new Date().fp_incr(30) });

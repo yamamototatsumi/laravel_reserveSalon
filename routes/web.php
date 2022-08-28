@@ -17,7 +17,7 @@ use App\Http\Controllers\EventController;
 */
 
 Route::get('/', function () {
-    return view('calender');
+    return view('calendar');
 });
 
 Route::middleware([
