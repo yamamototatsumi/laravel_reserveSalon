@@ -16,13 +16,16 @@
           @if($events->isNotEmpty()){{-- 1 --}}{{-- 成立してる --}}
           @if(!is_null($events->firstWhere('start_date', $currentWeek[$i] ['checkDay'] . " " . \Constant::EVENT_TIME[$j]) )){{-- 2 --}}
           @php
+            $eventId = $events->firstWhere('start_date', $currentWeek[$i]['checkDay'] . " " . \Constant::EVENT_TIME[$j])->id;
             $eventName = $events->firstWhere('start_date', $currentWeek[$i]['checkDay'] . " " . \Constant::EVENT_TIME[$j])->name;   //イベントの名前取得
             $eventInfo = $events->firstWhere('start_date', $currentWeek[$i]['checkDay'] . " " . \Constant::EVENT_TIME[$j]); //いベントの開始時間
             $eventPeriod = \Carbon\Carbon::parse($eventInfo->start_date)->diffInMinutes($eventInfo->end_date) / 30 - 1; //30分につき1の差分を取得
           @endphp
+          <a href="{{route('event.detail', ['id' => $eventId])}}">
           <div class="py-1 px-2 h-8 border border-gray-200 text-xs bg-blue-100">
             {{ $eventName }}
             </div>
+          </a>
             @if($eventPeriod > 0 )
               @for($k = 0 ; $k < $eventPeriod; $k ++)
               <div class="py-1 px-2 h-8 border border-gray-200 bg-blue-100"></div>
