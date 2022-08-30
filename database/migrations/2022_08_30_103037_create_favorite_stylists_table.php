@@ -13,13 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('event_user', function (Blueprint $table) {
-          $table->id(); 
+        Schema::create('favorite_stylists', function (Blueprint $table) {
+          $table->id();
+          $table->foreignId('stylist_id')->constrained()->onUpdate('cascade'); //外部キー制約
           $table->foreignId('user_id')->constrained()->onUpdate('cascade'); //外部キー制約
-          $table->foreignId('event_id')->constrained()->onUpdate('cascade'); //外部キー制約
-          $table->datetime('canceled_at')->nullable(); 
-          $table->datetime('checked_at')->nullable(); 
           $table->timestamps();
+          $table->softDeletes();
         });
     }
 
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('event_users');
+        Schema::dropIfExists('favorite_stylists');
     }
 };

@@ -18,7 +18,7 @@ use App\Http\Controllers\Event_userController;
 */
 
 Route::get('/', function () {
-    return view('calendar');
+    return view('welcome');
 });
 
 // Route::middleware([
@@ -45,6 +45,8 @@ Route::middleware('can:user-higher')
     Route::get('/{id}', [Event_userController::class, 'detail'])->name('event.detail');
 
     Route::post('/{id}', [Event_userController::class, 'reserve'])->name('event.reserve');
+
+ 
     });
 
 
@@ -55,3 +57,5 @@ Route::controller(LivewireTestController::class)
 });
 
 Route::get('alpine-test/index', [AlpineTestController::class, 'index']);
+
+// return view('calendar'); 
