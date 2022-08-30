@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Event>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Stylist>
  */
-class EventFactory extends Factory
+class StylistFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -32,14 +32,9 @@ class EventFactory extends Factory
         return [
           'name' => $this->faker->name,
           'salon_id' => $this->faker->numberBetween(1,20),
-          'stylist_id' => $this->faker->numberBetween(1,20),
-          'user_id' => $this->faker->numberBetween(1,20),
+          'rank' => $this->faker->numberBetween(0,9),
           'information' => $this->faker->realText,
-          'price' => $price_ar[$price],
-          'max_people' => $this->faker->numberBetween(1,20),
-          'start_date' => $startDate,
-          'end_date' => $endDate,
-          'is_visible' => 1
+          'is_visiable' => $this->faker->boolean
         ];
     }
 }

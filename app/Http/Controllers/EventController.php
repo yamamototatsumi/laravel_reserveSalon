@@ -7,9 +7,11 @@ use App\Http\Requests\UpdateEventRequest;
 use App\Models\Event;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Support\Carbon;
+use Carbon\CarbonImmutable;
 use App\Services\EventService;
 use App\Models\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class EventController extends Controller
 {
@@ -128,6 +130,20 @@ class EventController extends Controller
       ->paginate(20);
       return  view('manager.events.past', compact('events'));
     }
+
+    public function dashboard(){
+      $today = CarbonImmutable::today();
+      $afterTwoWeeks = $today->addWeek();
+      $events = Event::whereBetween('start_date',[$today,$afterTwoWeeks])->selectRaw('DATE_FORMAT(start_date, "%m%d") AS date')
+      ->selectRaw('SUM(is_visible) AS total_count')
+      ->groupBy('date')
+      ->get();
+      // dd($events);
+      return view('dashboard',compact('events','today'));
+    }
+
+    
+
 
     /**
      * Remove the specified resource from storage.

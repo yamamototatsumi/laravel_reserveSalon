@@ -31,23 +31,32 @@ Route::get('/', function () {
 //     })->name('dashboard');
 // });
 
+Route::get('dashboard', [EventController::class, 'dashboard'])->name('dashboard');
+
+Route::get('/{id}', [Event_userController::class, 'detail'])->name('event.detail');
+
 Route::prefix('manager')
 ->middleware('can:manager-higher')
 ->group(function(){
   Route::get('events/past', [EventController::class, 'past'])->name('events.past');
+
+
+
     Route::resource('events',EventController::class);
+
+  
 });
 
-Route::middleware('can:user-higher')
-->group(function(){
-    Route::get('dashboard', [Event_userController::class, 'dashboard'])->name('dashboard');
+// Route::middleware('can:user-higher')
+// ->group(function(){
+//     // Route::get('dashboard', [Event_userController::class, 'dashboard'])->name('dashboard');
 
-    Route::get('/{id}', [Event_userController::class, 'detail'])->name('event.detail');
+//     
 
-    Route::post('/{id}', [Event_userController::class, 'reserve'])->name('event.reserve');
+//     Route::post('/{id}', [Event_userController::class, 'reserve'])->name('event.reserve');
 
  
-    });
+//     });
 
 
 Route::controller(LivewireTestController::class)

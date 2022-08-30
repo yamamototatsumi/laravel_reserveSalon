@@ -11,13 +11,23 @@ class Event extends Model
 {
     use HasFactory;
     protected $fillable = [
-      'name', 
-      'information',
-      'max_people',
+      'salon_id',
+      'stylist_id',
+      'user_id',
       'start_date', 
       'end_date', 
+      'information',
+      'memo',
+      'price',
+      'checked_at',
+      'canceled_at',
+      'max_people',
+      'name', 
       'is_visible'
   ];
+  protected $dates = [
+    'start_date'
+];
 
   public function users()
   {

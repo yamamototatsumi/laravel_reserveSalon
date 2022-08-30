@@ -9,9 +9,9 @@ use App\Models\Event_user;
 
 class Event_userController extends Controller
 {
-    public function dashboard(){
-      return view('dashboard');
-    }
+    // public function dashboard(){
+    //   return view('dashboard');
+    // }
 
     public function detail($id){
       $event = Event::find($id);

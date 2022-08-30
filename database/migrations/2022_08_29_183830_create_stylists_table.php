@@ -18,9 +18,10 @@ return new class extends Migration
           $table->string('name');
           $table->foreignId('salon_id')->constrained()->onUpdate('cascade'); //外部キー制約
           $table->string('profile_photo_path', 2048)->nullable();
-          $table->string('style_photo_path', 2048)->nullable();
+          $table->string('style_photo_path_1', 2048)->nullable();
+          $table->string('style_photo_path_2', 2048)->nullable();
           $table->integer('rank')->default(0);
-          $table->integer('experience');
+          $table->integer('experience')->default(5);
           $table->string('catchcopy')->nullable();
           $table->string('information')->nullable();
           $table->string('appeal_technique')->nullable();
